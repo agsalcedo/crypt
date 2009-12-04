@@ -221,8 +221,9 @@ class Rijndael
   def encrypt_block(block)
     raise "block must be #{@blockSize} bytes long" if (block.length() != @blockSize)
     blockArray = [[], [], [], []]
+    block_bytes = block.bytes.to_a
     0.upto(@blockSize - 1) { |pos|
-      blockArray[pos % 4][pos / 4] = block[pos]
+      blockArray[pos % 4][pos / 4] = block_bytes[pos]
     }
     encryptedBlock = encrypt_byte_array(blockArray)
     encrypted = ""
@@ -253,8 +254,9 @@ class Rijndael
   def decrypt_block(block)
     raise "block must be #{@blockSize} bytes long" if (block.length() != @blockSize)
     blockArray = [[], [], [], []]
+    block_bytes = block.bytes.to_a
     0.upto(@blockSize - 1) { |pos|
-      blockArray[pos % 4][pos / 4] = block[pos]
+      blockArray[pos % 4][pos / 4] = block_bytes[pos]
     }
     decryptedBlock = decrypt_byte_array(blockArray)
     decrypted = ""
