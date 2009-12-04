@@ -25,36 +25,36 @@ class TestRijndael < Test::Unit::TestCase
   def test_block
     rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 128)
     block = "\341q\214NIj\023u\343\330s\323\354$g\277"
-    encryptedBlock = rijndael.encrypt_block(block)
-    assert_equal("\024\246^\332T\323x`\323yB\352\2159\212R", encryptedBlock)
-    decryptedBlock = rijndael.decrypt_block(encryptedBlock)
-    assert_equal(block, decryptedBlock)
+    encrypted_block = rijndael.encrypt_block(block)
+    assert_equal("\024\246^\332T\323x`\323yB\352\2159\212R", encrypted_block)
+    decrypted_block = rijndael.decrypt_block(encrypted_block)
+    assert_equal(block, decrypted_block)
     rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 256)
     assert_raise(RuntimeError) {
-      encryptedBlock = rijndael.encrypt_block(block)
+      encrypted_block = rijndael.encrypt_block(block)
     }
   end
 	
   def test_string
     rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?")
     string = "This is a string which is not a multiple of 8 characters long"
-    encryptedString = rijndael.encrypt_string(string)
-    decryptedString = rijndael.decrypt_string(encryptedString)
-    assert_equal(string, decryptedString)
+    encrypted_string = rijndael.encrypt_string(string)
+    decrypted_string = rijndael.decrypt_string(encrypted_string)
+    assert_equal(string, decrypted_string)
   end
   
   def test_file
-    plainText = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
-    plainFile = File.new('plain.txt', 'wb+')
-    plainFile.puts(plainText)
-    plainFile.close()
+    plain_text = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
+    plain_file = File.new('plain.txt', 'wb+')
+    plain_file.puts(plain_text)
+    plain_file.close()
     rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?")
     rijndael.encrypt_file('plain.txt', 'crypt.txt')
     rijndael.decrypt_file('crypt.txt', 'decrypt.txt')
-    decryptFile = File.new('decrypt.txt', 'rb')
-    decryptText = decryptFile.readlines().join('').chomp()
-    decryptFile.close()
-    assert_equal(plainText, decryptText)
+    decrypt_file = File.new('decrypt.txt', 'rb')
+    decrypt_text = decrypt_file.readlines().join('').chomp()
+    decrypt_file.close()
+    assert_equal(plain_text, decrypt_text)
     FileUtils.rm('plain.txt')
     FileUtils.rm('crypt.txt')
     FileUtils.rm('decrypt.txt')

@@ -1,123 +1,121 @@
-# cbc.rb  Richard Kernahan <kernighan_rich@rubyforge.org>
+require 'stringio'
+require 'crypt/stringxor'
 
 module Crypt
-module CBC
+  module CBC
   
-  require 'stringio'
-  require 'crypt/stringxor'
+    ULONG = 0x100000000
   
-  ULONG = 0x100000000
-  
-  # When this module is mixed in with an encryption class, the class
-  # must provide three methods: encrypt_block(block) and decrypt_block(block)
-  # and block_size()
+    # When this module is mixed in with an encryption class, the class
+    # must provide three methods: encrypt_block(block) and decrypt_block(block)
+    # and block_size()
   
   
-  def generate_initialization_vector(words)
-    srand(Time.now.to_i)
-    vector = ""
-    words.times {
-      vector << [rand(ULONG)].pack('N')
-    }
-    return(vector)
-  end
-  
-  
-  def encrypt_stream(plainStream, cryptStream)
-    # Cypher-block-chain mode
-    
-    initVector = generate_initialization_vector(block_size() / 4)
-    chain = encrypt_block(initVector)
-    cryptStream.write(chain)
-
-    while ((block = plainStream.read(block_size())) && (block.length == block_size()))
-      block = block ^ chain 
-      encrypted = encrypt_block(block)
-      cryptStream.write(encrypted)
-      chain = encrypted
+    def generate_initialization_vector(words)
+      srand(Time.now.to_i)
+      vector = ""
+      words.times {
+        vector << [rand(ULONG)].pack('N')
+      }
+      return(vector)
     end
+  
+  
+    def encrypt_stream(plain_stream, crypt_stream)
+      # Cypher-block-chain mode
+    
+      init_vector = generate_initialization_vector(block_size() / 4)
+      chain = encrypt_block(init_vector)
+      crypt_stream.write(chain)
+
+      while ((block = plain_stream.read(block_size())) && (block.length == block_size()))
+        block = block ^ chain 
+        encrypted = encrypt_block(block)
+        crypt_stream.write(encrypted)
+        chain = encrypted
+      end
    
-    # write the final block
-    # At most block_size()-1 bytes can be part of the message. 
-    # That means the final byte can be used to store the number of meaningful
-    # bytes in the final block
-    block = '' if block.nil?
-    buffer = block.split('')
-    remainingMessageBytes = buffer.length
-    # we use 7-bit characters to avoid possible strange behavior on the Mac
-    remainingMessageBytes.upto(block_size()-2) { buffer << rand(128).chr }
-    buffer << remainingMessageBytes.chr
-    block = buffer.join('')
-    block = block ^ chain
-    encrypted = encrypt_block(block)
-    cryptStream.write(encrypted)
-  end
+      # write the final block
+      # At most block_size()-1 bytes can be part of the message. 
+      # That means the final byte can be used to store the number of meaningful
+      # bytes in the final block
+      block = '' if block.nil?
+      buffer = block.split('')
+      remaining_message_bytes = buffer.length
+      # we use 7-bit characters to avoid possible strange behavior on the Mac
+      remaining_message_bytes.upto(block_size()-2) { buffer << rand(128).chr }
+      buffer << remaining_message_bytes.chr
+      block = buffer.join('')
+      block = block ^ chain
+      encrypted = encrypt_block(block)
+      crypt_stream.write(encrypted)
+    end
   
   
-  def decrypt_stream(cryptStream, plainStream)
-    # Cypher-block-chain mode
-    chain = cryptStream.read(block_size())
+    def decrypt_stream(crypt_stream, plain_stream)
+      # Cypher-block-chain mode
+      chain = crypt_stream.read(block_size())
 
-    while (block = cryptStream.read(block_size()))
-      decrypted = decrypt_block(block)
-      plainText = decrypted ^ chain
-      plainStream.write(plainText) unless cryptStream.eof?
-      chain = block
-    end
+      while (block = crypt_stream.read(block_size()))
+        decrypted = decrypt_block(block)
+        plain_text = decrypted ^ chain
+        plain_stream.write(plain_text) unless crypt_stream.eof?
+        chain = block
+      end
     
-    # write the final block, omitting the padding
-    buffer = plainText.split('')
-    remainingMessageBytes = buffer.last.unpack('C').first
-    remainingMessageBytes.times { plainStream.write(buffer.shift) }
-  end
-  
-  
-  def carefully_open_file(filename, mode)
-    begin
-      aFile = File.new(filename, mode)
-    rescue
-      puts "Sorry. There was a problem opening the file <#{filename}>."
-      aFile.close() unless aFile.nil?
-      raise
+      # write the final block, omitting the padding
+      buffer = plain_text.split('')
+      remaining_message_bytes = buffer.last.unpack('C').first
+      remaining_message_bytes.times { plain_stream.write(buffer.shift) }
     end
-    return(aFile)
+  
+  
+    def carefully_open_file(filename, mode)
+      begin
+        a_file = File.new(filename, mode)
+      rescue
+        puts "Sorry. There was a problem opening the file <#{filename}>."
+        a_file.close() unless a_file.nil?
+        raise
+      end
+      return(a_file)
+    end
+  
+  
+    def encrypt_file(plain_filename, crypt_filename)
+      plain_file = carefully_open_file(plain_filename, 'rb')
+      crypt_file = carefully_open_file(crypt_filename, 'wb+')
+      encrypt_stream(plain_file, crypt_file)
+      plain_file.close unless plain_file.closed?
+      crypt_file.close unless crypt_file.closed?
+    end
+  
+  
+    def decrypt_file(crypt_filename, plain_filename)
+      crypt_file = carefully_open_file(crypt_filename, 'rb')
+      plain_file = carefully_open_file(plain_filename, 'wb+')
+      decrypt_stream(crypt_file, plain_file)
+      crypt_file.close unless crypt_file.closed?
+      plain_file.close unless plain_file.closed?
+    end
+  
+  
+    def encrypt_string(plain_text)
+      plain_stream = StringIO.new(plain_text)
+      crypt_stream = StringIO.new('')
+      encrypt_stream(plain_stream, crypt_stream)
+      crypt_text = crypt_stream.string
+      return(crypt_text)
+    end
+  
+  
+    def decrypt_string(crypt_text)
+      crypt_stream = StringIO.new(crypt_text)
+      plain_stream = StringIO.new('')
+      decrypt_stream(crypt_stream, plain_stream)
+      plain_text = plain_stream.string
+      return(plain_text)
+    end
+  
   end
-  
-  
-  def encrypt_file(plainFilename, cryptFilename)
-    plainFile = carefully_open_file(plainFilename, 'rb')
-    cryptFile = carefully_open_file(cryptFilename, 'wb+')
-    encrypt_stream(plainFile, cryptFile)
-    plainFile.close unless plainFile.closed?
-    cryptFile.close unless cryptFile.closed?
-  end
-  
-  
-  def decrypt_file(cryptFilename, plainFilename)
-    cryptFile = carefully_open_file(cryptFilename, 'rb')
-    plainFile = carefully_open_file(plainFilename, 'wb+')
-    decrypt_stream(cryptFile, plainFile)
-    cryptFile.close unless cryptFile.closed?
-    plainFile.close unless plainFile.closed?
-  end
-  
-  
-  def encrypt_string(plainText)
-    plainStream = StringIO.new(plainText)
-    cryptStream = StringIO.new('')
-    encrypt_stream(plainStream, cryptStream)
-    cryptText = cryptStream.string
-    return(cryptText)
-  end
-  
-  
-  def decrypt_string(cryptText)
-    cryptStream = StringIO.new(cryptText)
-    plainStream = StringIO.new('')
-    decrypt_stream(cryptStream, plainStream)
-    plainText = plainStream.string
-    return(plainText)
-  end
-  
-end
 end

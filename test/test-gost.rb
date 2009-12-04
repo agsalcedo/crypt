@@ -34,10 +34,10 @@ class TestGost < Test::Unit::TestCase
   def test_block
     gost = Crypt::Gost.new("Whatever happened to Yuri?") 
     block = "norandom"
-    encryptedBlock = gost.encrypt_block(block)
-    assert_equal(".Vy\377\005\e3`", encryptedBlock)
-    decryptedBlock = gost.decrypt_block(encryptedBlock)
-    assert_equal(block, decryptedBlock)
+    encrypted_block = gost.encrypt_block(block)
+    assert_equal(".Vy\377\005\e3`", encrypted_block)
+    decrypted_block = gost.decrypt_block(encrypted_block)
+    assert_equal(block, decrypted_block)
   end
 	
   def test_string
@@ -46,23 +46,23 @@ class TestGost < Test::Unit::TestCase
     length.times { userkey << rand(256).chr }
     gost = Crypt::Gost.new(userkey) 
     string = "This is a string which is not a multiple of 8 characters long"
-    encryptedString = gost.encrypt_string(string)
-    decryptedString = gost.decrypt_string(encryptedString)
-    assert_equal(string, decryptedString)
+    encrypted_string = gost.encrypt_string(string)
+    decrypted_string = gost.decrypt_string(encrypted_string)
+    assert_equal(string, decrypted_string)
   end
   
   def test_file
-    plainText = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
-    plainFile = File.new('plain.txt', 'wb+')
-    plainFile.puts(plainText)
-    plainFile.close()
+    plain_text = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
+    plain_file = File.new('plain.txt', 'wb+')
+    plain_file.puts(plain_text)
+    plain_file.close()
     gost = Crypt::Gost.new("Whatever happened to Yuri?") 
     gost.encrypt_file('plain.txt', 'crypt.txt')
     gost.decrypt_file('crypt.txt', 'decrypt.txt')
-    decryptFile = File.new('decrypt.txt', 'rb')
-    decryptText = decryptFile.readlines().join('').chomp()
-    decryptFile.close()
-    assert_equal(plainText, decryptText)
+    decrypt_file = File.new('decrypt.txt', 'rb')
+    decrypt_text = decrypt_file.readlines().join('').chomp()
+    decrypt_file.close()
+    assert_equal(plain_text, decrypt_text)
     FileUtils.rm('plain.txt')
     FileUtils.rm('crypt.txt')
     FileUtils.rm('decrypt.txt')

@@ -32,11 +32,11 @@ class TestIdea < Test::Unit::TestCase
   def test_block
     idea_en = Crypt::IDEA.new("Who is John Galt", Crypt::IDEA::ENCRYPT) 
     block = "norandom"
-    encryptedBlock = idea_en.encrypt_block(block)
-    assert_equal("\235\003\326u\001\330\361\t", encryptedBlock)
+    encrypted_block = idea_en.encrypt_block(block)
+    assert_equal("\235\003\326u\001\330\361\t", encrypted_block)
     idea_de = Crypt::IDEA.new("Who is John Galt", Crypt::IDEA::DECRYPT) 
-    decryptedBlock = idea_de.decrypt_block(encryptedBlock)
-    assert_equal(block, decryptedBlock)
+    decrypted_block = idea_de.decrypt_block(encrypted_block)
+    assert_equal(block, decrypted_block)
   end
 	
   def test_string
@@ -45,25 +45,25 @@ class TestIdea < Test::Unit::TestCase
     length.times { userkey << rand(256).chr }
     idea_en = Crypt::IDEA.new(userkey, Crypt::IDEA::ENCRYPT) 
     string = "This is a string which is not a multiple of 8 characters long"
-    encryptedString = idea_en.encrypt_string(string)
+    encrypted_string = idea_en.encrypt_string(string)
     idea_de = Crypt::IDEA.new(userkey, Crypt::IDEA::DECRYPT) 
-    decryptedString = idea_de.decrypt_string(encryptedString)
+    decryptedString = idea_de.decrypt_string(encrypted_string)
     assert_equal(string, decryptedString)
   end
   
   def test_file
-    plainText = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
-    plainFile = File.new('plain.txt', 'wb+')
-    plainFile.puts(plainText)
-    plainFile.close()
+    plain_text = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
+    plain_file = File.new('plain.txt', 'wb+')
+    plain_file.puts(plain_text)
+    plain_file.close()
     idea_en = Crypt::IDEA.new("Who is John Galt", Crypt::IDEA::ENCRYPT) 
     idea_en.encrypt_file('plain.txt', 'crypt.txt')
     idea_de = Crypt::IDEA.new("Who is John Galt", Crypt::IDEA::DECRYPT) 
     idea_de.decrypt_file('crypt.txt', 'decrypt.txt')
-    decryptFile = File.new('decrypt.txt', 'rb')
-    decryptText = decryptFile.readlines().join('').chomp()
-    decryptFile.close()
-    assert_equal(plainText, decryptText)
+    decrypt_file = File.new('decrypt.txt', 'rb')
+    decrypt_text = decrypt_file.readlines().join('').chomp()
+    decrypt_file.close()
+    assert_equal(plain_text, decrypt_text)
     FileUtils.rm('plain.txt')
     FileUtils.rm('crypt.txt')
     FileUtils.rm('decrypt.txt')

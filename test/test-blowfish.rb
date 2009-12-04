@@ -44,10 +44,10 @@ class TestBlowfish < Test::Unit::TestCase
   def test_block
     bf = Crypt::Blowfish.new("Who is John Galt?") 
     block = "norandom"
-    encryptedBlock = bf.encrypt_block(block)
-    assert_equal("\236\353k\321&Q\"\220", encryptedBlock)
-    decryptedBlock = bf.decrypt_block(encryptedBlock)
-    assert_equal(block, decryptedBlock)
+    encrypted_block = bf.encrypt_block(block)
+    assert_equal("\236\353k\321&Q\"\220", encrypted_block)
+    decrypted_block = bf.decrypt_block(encrypted_block)
+    assert_equal(block, decrypted_block)
   end
   
   def test_string
@@ -56,28 +56,28 @@ class TestBlowfish < Test::Unit::TestCase
     length.times { userkey << rand(256).chr }
     bf = Crypt::Blowfish.new(userkey) 
     string = "This is a string which is not a multiple of 8 characters long"
-    encryptedString = bf.encrypt_string(string)
-    decryptedString = bf.decrypt_string(encryptedString)
-    assert_equal(string, decryptedString)
+    encrypted_string = bf.encrypt_string(string)
+    decrypted_string = bf.decrypt_string(encrypted_string)
+    assert_equal(string, decrypted_string)
     secondstring = "This is another string to check repetitive use."
-    encryptedString = bf.encrypt_string(secondstring)
-    decryptedString = bf.decrypt_string(encryptedString)
-    assert_equal(secondstring, decryptedString)
+    encrypted_string = bf.encrypt_string(secondstring)
+    decrypted_string = bf.decrypt_string(encrypted_string)
+    assert_equal(secondstring, decrypted_string)
     
   end
   
   def test_file
-    plainText = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
-    plainFile = File.new('plain.txt', 'wb+')
-    plainFile.puts(plainText)
-    plainFile.close()
+    plain_text = "This is a multi-line string\nwhich is not a multiple of 8 \ncharacters long."
+    plain_file = File.new('plain.txt', 'wb+')
+    plain_file.puts(plain_text)
+    plain_file.close()
     bf = Crypt::Blowfish.new("Who is John Galt?")
     bf.encrypt_file('plain.txt', 'crypt.txt')
     bf.decrypt_file('crypt.txt', 'decrypt.txt')
-    decryptFile = File.new('decrypt.txt', 'rb')
-    decryptText = decryptFile.readlines().join('').chomp()
-    decryptFile.close()
-    assert_equal(plainText, decryptText)
+    decrypt_file = File.new('decrypt.txt', 'rb')
+    decrypt_text = decrypt_file.readlines().join('').chomp()
+    decrypt_file.close()
+    assert_equal(plain_text, decrypt_text)
     FileUtils.rm('plain.txt')
     FileUtils.rm('crypt.txt')
     FileUtils.rm('decrypt.txt')
