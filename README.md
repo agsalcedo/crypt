@@ -8,7 +8,7 @@ Crypt is written entirely in ruby so deployment is simple - no platform concerns
 This version is tested on Ruby 1.8.7 and 1.9.1.
 
 ## Usage
-TODO
+TODO See http://crypt.rubyforge.org/ for now.
 
 ## Installation
     gem install crypt19
