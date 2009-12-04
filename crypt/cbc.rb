@@ -41,10 +41,8 @@ module Crypt
       # bytes in the final block
       block = '' if block.nil?
       buffer = block.split('')
-      remaining_message_bytes = buffer.length
-      # we use 7-bit characters to avoid possible strange behavior on the Mac
-      remaining_message_bytes.upto(block_size()-2) { buffer << rand(128).chr }
-      buffer << remaining_message_bytes.chr
+      remaining_message_bytes = block_size() - buffer.length
+      buffer << remaining_message_bytes.chr * remaining_message_bytes
       block = buffer.join('')
       block = block ^ chain
       encrypted = encrypt_block(block)
@@ -65,7 +63,7 @@ module Crypt
     
       # write the final block, omitting the padding
       buffer = plain_text.split('')
-      remaining_message_bytes = buffer.last.unpack('C').first
+      remaining_message_bytes = block_size() - buffer.last.unpack('C').first
       remaining_message_bytes.times { plain_stream.write(buffer.shift) }
     end
   
