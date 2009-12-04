@@ -67,9 +67,9 @@ module Crypt
       0.upto(15) { |i|
           xl = (xl ^ @p_array[i]) % ULONG
           xr = (xr ^ f(xl)) % ULONG
-          xl, xr = [xl, xr].reverse
+          xl, xr = xr, xl
       }
-      xl, xr = [xl, xr].reverse
+      xl, xr = xr, xl
       xr = (xr ^ @p_array[16]) % ULONG
       xl = (xl ^ @p_array[17]) % ULONG
       return([xl, xr])
@@ -80,9 +80,9 @@ module Crypt
       17.downto(2) { |i|
           xl = (xl ^ @p_array[i]) % ULONG
           xr = (xr ^ f(xl)) % ULONG
-          xl, xr = [xl, xr].reverse
+          xl, xr = xr, xl
       }
-      xl, xr = [xl, xr].reverse
+      xl, xr = xr, xl
       xr = (xr ^ @p_array[1]) % ULONG
       xl = (xl ^ @p_array[0]) % ULONG
       return([xl, xr])
