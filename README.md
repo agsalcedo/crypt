@@ -16,8 +16,11 @@ TODO See http://crypt.rubyforge.org/ for now.
 ## Credits
 ### Contributors
 Updated and maintained by Jonathan Rudenberg (2009)
+
 RC6 algorithm implementation by Alexey Lapitsky (2009)
+
 Block padding fix by Daniel Brahneborg (2007)
+
 Originally written by Richard Kernahan (2005/2006)
 
 ### References
