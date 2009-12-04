@@ -28,7 +28,7 @@ class IDEA
     # IDEA is subject to attack unless the key is sufficiently random, so we
     # take an MD5 digest of a variable-length passphrase to ensure a solid key
     if (key128.class == String)  
-      digest = Digest::MD5.new(key128).digest
+      digest = Digest::MD5.digest(key128)
       key128 = digest.unpack('n'*8)
     end
     raise "Key must be 128 bits (8 words)" unless (key128.class == Array) && (key128.length == 8)
