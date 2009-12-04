@@ -1,4 +1,4 @@
-# testblowfish.rb  bryllig
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 require 'test/unit'
 require 'crypt/blowfish'
@@ -9,9 +9,6 @@ class TestBlowfish < Test::Unit::TestCase
   
   def setup
      @bf = Crypt::Blowfish.new("Who is John Galt?")  # Schneier's test key
-  end
-  
-  def teardown
   end
   
   def test_block_size

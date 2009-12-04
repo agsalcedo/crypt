@@ -1,24 +1,20 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
+
 require 'test/unit'
 require 'crypt/gost'
 require 'fileutils'
 
 class TestGost < Test::Unit::TestCase
 
-	def setup
-	end
-
-	def teardown
-	end
-	
-    def test_init
-	  assert_nothing_raised(RuntimeError) {
-        gost = Crypt::Gost.new("Whatever happened to Yuri Gagarin?")
-      }
-	  assert_nothing_raised(RuntimeError) {
-        gost = Crypt::Gost.new("Whatever happened to Yuri?")
-      }
-    end
-    
+  def test_init
+  assert_nothing_raised(RuntimeError) {
+      gost = Crypt::Gost.new("Whatever happened to Yuri Gagarin?")
+    }
+  assert_nothing_raised(RuntimeError) {
+      gost = Crypt::Gost.new("Whatever happened to Yuri?")
+    }
+  end
+  
   def test_block_size
     gost = Crypt::Gost.new("Whatever happened to Yuri?")
     assert_equal(8, gost.block_size(), "Wrong block size")

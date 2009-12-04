@@ -1,20 +1,16 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
+
 require 'test/unit'
 require 'crypt/idea'
 require 'fileutils'
 
 class TestIdea < Test::Unit::TestCase
 
-	def setup
-	end
-
-	def teardown
-	end
-	
-    def test_init
-	  assert_nothing_raised(RuntimeError) {
-        idea_en = Crypt::IDEA.new("Who was John Galt and where's my breakfast?", Crypt::IDEA::ENCRYPT)  
-      }
-    end
+  def test_init
+  assert_nothing_raised(RuntimeError) {
+      idea_en = Crypt::IDEA.new("Who was John Galt and where's my breakfast?", Crypt::IDEA::ENCRYPT)  
+    }
+  end
     
   def test_block_size
     idea_en = Crypt::IDEA.new("Who is John Galt", Crypt::IDEA::ENCRYPT) 

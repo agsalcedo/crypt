@@ -1,43 +1,39 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
+
 require 'test/unit'
 require 'crypt/rijndael'
 require 'fileutils'
 
 class TestRijndael < Test::Unit::TestCase
 
-	def setup
-	end
-
-	def teardown
-	end
-	
-    def test_init
-	  assert_raise(RuntimeError) {
-        rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 64)
-      }
-	  assert_raise(RuntimeError) {
-        rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 64)
-      }
-    end
-    
-    def test_block_size
-      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 256)
-      assert_equal(32, rijndael.block_size)
-      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 256, 128)
-      assert_equal(16, rijndael.block_size)
-    end
-    
-    def test_block
-      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 128)
-      block = "\341q\214NIj\023u\343\330s\323\354$g\277"
+  def test_init
+  assert_raise(RuntimeError) {
+      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 64)
+    }
+  assert_raise(RuntimeError) {
+      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 64)
+    }
+  end
+  
+  def test_block_size
+    rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 256)
+    assert_equal(32, rijndael.block_size)
+    rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 256, 128)
+    assert_equal(16, rijndael.block_size)
+  end
+  
+  def test_block
+    rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 128)
+    block = "\341q\214NIj\023u\343\330s\323\354$g\277"
+    encryptedBlock = rijndael.encrypt_block(block)
+    assert_equal("\024\246^\332T\323x`\323yB\352\2159\212R", encryptedBlock)
+    decryptedBlock = rijndael.decrypt_block(encryptedBlock)
+    assert_equal(block, decryptedBlock)
+    rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 256)
+    assert_raise(RuntimeError) {
       encryptedBlock = rijndael.encrypt_block(block)
-      assert_equal("\024\246^\332T\323x`\323yB\352\2159\212R", encryptedBlock)
-      decryptedBlock = rijndael.decrypt_block(encryptedBlock)
-      assert_equal(block, decryptedBlock)
-      rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?", 128, 256)
-      assert_raise(RuntimeError) {
-        encryptedBlock = rijndael.encrypt_block(block)
-      }
-    end
+    }
+  end
 	
   def test_string
     rijndael = Crypt::Rijndael.new("Who is this John Galt guy, anyway?")
