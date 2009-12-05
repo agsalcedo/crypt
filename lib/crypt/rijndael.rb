@@ -2,13 +2,14 @@
 #   rijndael-alg-ref.c   v2.2   March 2002
 #   Reference ANSI C code by Paulo Barreto and Vincent Rijmen
 
+require 'crypt/cbc'
+require 'crypt/rijndael-tables'
+require 'crypt/bytes-compat'
+
 module Crypt
   class Rijndael
 
-    require 'crypt/cbc'
     include Crypt::CBC
-  
-    require 'crypt/rijndael-tables'
     include Crypt::RijndaelTables
   
   

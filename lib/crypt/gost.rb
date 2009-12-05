@@ -1,10 +1,11 @@
 # adapted from C++ code written by Wei Dai 
 # of the Crypto++ project http://www.eskimo.com/~weidai/cryptlib.html
 
+require 'crypt/cbc'
+
 module Crypt
   class Gost
 
-    require 'crypt/cbc'
     include CBC
   
     ULONG   = 0x100000000

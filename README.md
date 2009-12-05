@@ -5,7 +5,7 @@ The Crypt library is a pure-ruby implementation of a number of popular encryptio
 
 Crypt is written entirely in ruby so deployment is simple - no platform concerns, no library dependencies, nothing to compile.
 
-This version is tested on Ruby 1.9.1.
+This version is tested on MRI Ruby 1.8.6, 1.8.7, 1.9.1, 1.9.2-preview1, and JRuby 1.4.0.
 
 ## Usage
 TODO See http://crypt.rubyforge.org/ for now.

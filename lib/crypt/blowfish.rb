@@ -3,6 +3,7 @@
 
 require 'crypt/cbc'
 require 'crypt/blowfish-tables'
+require 'crypt/bytes-compat'
 
 module Crypt
   class Blowfish

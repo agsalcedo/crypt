@@ -1,13 +1,13 @@
 # IDEA (International Data Encryption Algorithm) by 
 # Xuejia Lai and James Massey (1992).  Refer to license info at the end of this file.
 
+require 'digest/md5'
+require 'crypt/cbc'
+
 module Crypt
   class IDEA
   
-    require 'crypt/cbc'
     include Crypt::CBC
-
-    require 'digest/md5'
   
     ULONG   = 0x100000000
     USHORT  = 0x10000
