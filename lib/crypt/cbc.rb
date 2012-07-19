@@ -2,7 +2,7 @@ require 'stringio'
 require 'crypt/stringxor'
 
 module Crypt
-  module CBC
+	module CBC
 		ULONG = 0x100000000
 
 		# When this module is mixed in with an encryption class, the class
@@ -33,8 +33,10 @@ module Crypt
 			# bytes in the final block
 			block = '' if block.nil?
 			buffer = block.split('')
-			remaining_message_bytes = block_size - buffer.length
-			buffer << remaining_message_bytes.chr * remaining_message_bytes
+			#remaining_message_bytes = block_size - buffer.length
+			#buffer << remaining_message_bytes.chr * remaining_message_bytes				
+      			remaining_message_bytes = buffer.length
+			buffer << remaining_message_bytes.chr * (block_size - remaining_message_bytes)
 			block = buffer.join('')
 			block = block ^ chain
 			encrypted = encrypt_block(block)
@@ -55,7 +57,8 @@ module Crypt
 
 			#write the final block, omitting the padding
 			buffer = plain_text.split('')
-			remaining_message_bytes = block_size() - buffer.last.unpack('C').first
+			#remaining_message_bytes = block_size - buffer.last.unpack('C').first
+			remaining_message_bytes = buffer.last.unpack('C').first
 			remaining_message_bytes.times { plain_stream.write(buffer.shift) }
 		end
 
@@ -64,10 +67,10 @@ module Crypt
 				a_file = File.new(filename, mode)
 			rescue
 				puts "Sorry. There was a problem opening the file <#{filename}>."
-				a_file.close unless a_file.nil?
+				a_file.close() unless a_file.nil?
 				raise
 			end
-			return a_file
+			return(a_file)
 		end
 
 
